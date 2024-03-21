@@ -8,7 +8,7 @@ import (
 
 func main() {
 	router := router.New()
-	if err := router.Run(":8000"); err != nil {
+	if err := router.Run(":8080"); err != nil {
 		log.Fatalf("An error occurs with the server: %v", err)
 	}
 }
