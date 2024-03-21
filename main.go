@@ -36,5 +36,5 @@ func ExampleScrape() {
 
 func main() {
 	scraper := scraper.New()
-	scraper.Scrape("doraemon")
+	scraper.Scrape("chat gpt")
 }
