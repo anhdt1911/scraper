@@ -1,7 +1,9 @@
 package scraper
 
 import (
+	"bytes"
 	"fmt"
+	"io"
 	"math/rand"
 	"net/http"
 	"regexp"
@@ -30,11 +32,11 @@ type Scraper struct {
 }
 
 type SearchResult struct {
-	keyword           string
-	links             []string
-	totalSearchResult string
-	htmlContent       string
-	adwords           []string
+	Keyword           string   `json:"keyword"`
+	Links             []string `json:"links"`
+	TotalSearchResult string   `json:"totalSearchResult"`
+	HtmlContent       string   `json:"htmlContent"`
+	Adwords           []string `json:"adwords"`
 }
 
 func New() *Scraper {
@@ -60,63 +62,66 @@ func rotateUserAgent() string {
 func (s *Scraper) request(url string) (*http.Response, error) {
 	req, err := http.NewRequest("GET", url, nil)
 	if err != nil {
-		fmt.Printf("client: could not create request: %s\n", err)
 		return nil, err
 	}
 	req.Header.Set("User-Agent", rotateUserAgent())
 
 	res, err := s.client.Do(req)
 	if err != nil {
-		fmt.Printf("client: error making http request: %s\n", err)
 		return nil, err
 	}
 	return res, nil
 }
 
-func (s *Scraper) Scrape(keyword string) error {
+func (s *Scraper) Scrape(keyword string) (*SearchResult, error) {
 	res, err := s.request(buildUrl(keyword))
 	if err != nil {
-		return err
+		return nil, err
 	}
 	defer res.Body.Close()
 
-	doc, err := html.Parse(res.Body)
-	if err != nil {
-		return err
+	bodyBytes, _ := io.ReadAll(res.Body)
+
+	result := &SearchResult{
+		Keyword:     keyword,
+		HtmlContent: string(bodyBytes),
 	}
 
-	// Populate result.
-	var links []string
-	// var totalSearchResult string
-	var link func(*html.Node)
-	link = func(n *html.Node) {
+	doc, err := html.Parse(bytes.NewReader(bodyBytes))
+	if err != nil {
+		return nil, err
+	}
+
+	// Populate results.
+	var populate func(*html.Node)
+	populate = func(n *html.Node) {
 		if n.Type == html.ElementNode {
 			switch n.Data {
 			case "a":
 				for _, a := range n.Attr {
 					// Filter out valid links.
 					if a.Key == "href" && strings.HasPrefix(a.Val, "http") {
-						links = append(links, a.Val)
+						result.Links = append(result.Links, a.Val)
 					}
 				}
 			case "div":
 				for _, a := range n.Attr {
 					if strings.Contains(a.Val, "result-stats") {
-						fmt.Println(a)
+						for c := n.FirstChild; c != nil; c = c.NextSibling {
+							if c.Type == html.TextNode {
+								result.TotalSearchResult = c.Data
+							}
+						}
 					}
 				}
 			}
 		}
 
-		if n.Type == html.TextNode {
-			fmt.Println(n.Data)
-		}
-
 		for c := n.FirstChild; c != nil; c = c.NextSibling {
-			link(c)
+			populate(c)
 		}
 	}
-	link(doc)
+	populate(doc)
 
-	return nil
+	return result, nil
 }
