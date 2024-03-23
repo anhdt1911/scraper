@@ -32,11 +32,12 @@ type Scraper struct {
 }
 
 type SearchResult struct {
-	Keyword           string   `json:"keyword"`
-	Links             []string `json:"links"`
-	TotalSearchResult string   `json:"totalSearchResult"`
-	HtmlContent       string   `json:"htmlContent"`
-	Adwords           []string `json:"adwords"`
+	ID                string `json:"id"`
+	Keyword           string `json:"keyword"`
+	Links             string `json:"links"`
+	TotalSearchResult string `json:"totalSearchResult"`
+	HtmlContent       string `json:"htmlContent"`
+	AdwordAMount      int    `json:"adwordAmount"`
 }
 
 func New() *Scraper {
@@ -92,6 +93,7 @@ func (s *Scraper) Scrape(keyword string) (*SearchResult, error) {
 		return nil, err
 	}
 
+	var links []string
 	// Populate results.
 	var populate func(*html.Node)
 	populate = func(n *html.Node) {
@@ -101,7 +103,7 @@ func (s *Scraper) Scrape(keyword string) (*SearchResult, error) {
 				for _, a := range n.Attr {
 					// Filter out valid links.
 					if a.Key == "href" && strings.HasPrefix(a.Val, "http") {
-						result.Links = append(result.Links, a.Val)
+						links = append(links, a.Val)
 					}
 				}
 			case "div":
@@ -114,6 +116,7 @@ func (s *Scraper) Scrape(keyword string) (*SearchResult, error) {
 						}
 					}
 				}
+			case "span":
 			}
 		}
 
@@ -122,6 +125,7 @@ func (s *Scraper) Scrape(keyword string) (*SearchResult, error) {
 		}
 	}
 	populate(doc)
+	result.Links = strings.Join(links, ",")
 
 	return result, nil
 }
