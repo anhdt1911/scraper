@@ -38,6 +38,7 @@ type SearchResult struct {
 	TotalSearchResult string `json:"totalSearchResult"`
 	HtmlContent       string `json:"htmlContent"`
 	AdwordAMount      int    `json:"adwordAmount"`
+	UserID            int    `json:"userID"`
 }
 
 func New() *Scraper {

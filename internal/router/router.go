@@ -1,15 +1,11 @@
 package router
 
 import (
-	"fmt"
-	"log"
-	"net/http"
-	"os"
-
+	"github.com/anhdt1911/scraper/internal/server"
 	"github.com/gin-gonic/gin"
 )
 
-func New() *gin.Engine {
+func New(s *server.Server) *gin.Engine {
 	router := gin.Default()
 	router.MaxMultipartMemory = 8 << 20
 
@@ -20,14 +16,11 @@ func New() *gin.Engine {
 		})
 	})
 
-	router.POST("/upload", func(ctx *gin.Context) {
-		file, _ := ctx.FormFile("file")
-		log.Println(file.Filename)
-		dir, _ := os.Getwd()
-		fmt.Println(dir)
-		ctx.SaveUploadedFile(file, dir+"/"+file.Filename)
-		ctx.String(http.StatusOK, fmt.Sprintf("'%s uploaded!", file.Filename))
-	})
+	router.GET("/result/:keyID", s.GetSearchResultByKeyword)
+	router.GET("/results/:userID", s.GetSearchResultsByUserID)
+
+	router.POST("scrape", s.ScrapeResult)
+	router.POST("/batch-scrape", s.BatchScrape)
 
 	return router
 }
