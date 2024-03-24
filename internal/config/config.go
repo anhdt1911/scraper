@@ -15,7 +15,15 @@ var (
 	DBName     = configVar("POSTGRES_DB")
 )
 
+var (
+	AuthDomain       = configVar("AUTH0_DOMAIN")
+	AuthClientID     = configVar("AUTH0_CLIENT_ID")
+	AuthClientSecret = configVar("AUTH0_CLIENT_SECRET")
+	AuthCallbackURL  = configVar("AUTH0_CALLBACK_URL")
+)
+
 func configVar(name string) string {
+	// Todo move load env to main
 	err := godotenv.Load("./.env")
 	if err != nil {
 		panic("error loading env variables")

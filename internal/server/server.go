@@ -84,7 +84,7 @@ func (s *Server) ScrapeResult(c *gin.Context) {
 
 	// Insert to database
 	_, err = s.db.Exec(c, "INSERT INTO search_result (keyword, html_content, links, adword_amount, total_search_result, user_id) VALUES ($1, $2, $3, $4, $5, $6)",
-		result.Keyword, result.HtmlContent, result.Links, result.AdwordAMount, result.TotalSearchResult, 1,
+		result.Keyword, result.HtmlContent, result.Links, result.AdwordAMount, result.TotalSearchResult, "todo",
 	)
 	if err != nil {
 		c.JSON(400, gin.H{"msg": err})

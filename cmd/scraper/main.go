@@ -3,6 +3,7 @@ package main
 import (
 	"log"
 
+	"github.com/anhdt1911/scraper/internal/authenticator"
 	"github.com/anhdt1911/scraper/internal/config"
 	"github.com/anhdt1911/scraper/internal/database"
 	"github.com/anhdt1911/scraper/internal/router"
@@ -11,6 +12,11 @@ import (
 )
 
 func main() {
+	auth, err := authenticator.New()
+	if err != nil {
+		log.Fatalf("Fail to init authenticator: %v", err)
+	}
+
 	// Init scraper
 	scrpr := scraper.New()
 
@@ -30,7 +36,7 @@ func main() {
 
 	s := server.New(db, scrpr)
 
-	router := router.New(s)
+	router := router.New(s, auth)
 	if err := router.Run(":3000"); err != nil {
 		log.Fatalf("An error occurs with the server: %v", err)
 	}
