@@ -117,7 +117,7 @@ func (a *Authenticator) Callback(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusTemporaryRedirect, "http://localhost:5173/")
+	c.Redirect(http.StatusTemporaryRedirect, "http://localhost:5173/dashboard")
 }
 
 func (a *Authenticator) Logout(c *gin.Context) {
