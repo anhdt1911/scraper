@@ -120,6 +120,13 @@ func (a *Authenticator) Callback(c *gin.Context) {
 	c.Redirect(http.StatusTemporaryRedirect, "http://localhost:5173/dashboard")
 }
 
+func (a *Authenticator) GetUser(c *gin.Context) {
+	session := sessions.Default(c)
+	profile := session.Get("profile")
+
+	c.JSON(http.StatusOK, gin.H{"data": profile})
+}
+
 func (a *Authenticator) Logout(c *gin.Context) {
 	logoutUrl, err := url.Parse("https://" + config.AuthDomain + "/v2/logout")
 	if err != nil {
