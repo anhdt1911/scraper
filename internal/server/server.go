@@ -102,7 +102,8 @@ func (s *Server) GetSearchResultByKeyword(c *gin.Context) {
 		c.JSON(400, gin.H{"msg": err})
 		return
 	}
-	c.JSON(200, gin.H{"data": res})
+	// c.JSON(200, gin.H{"data": res})
+	c.Data(200, "text/html; charset=utf-8", []byte(res.HtmlContent))
 }
 
 func (s *Server) GetSearchResultsByUserID(c *gin.Context) {
