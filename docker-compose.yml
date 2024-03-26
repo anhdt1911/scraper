@@ -2,6 +2,19 @@
 version: "3.9"
 
 services:
+  scraper: 
+    build: .
+    depends_on:
+      - db
+    restart: always
+    shm_size: 128mb
+    env_file:
+      - .env
+    environment:
+      - POSTGRES_HOST=db
+    ports:
+      - 3000:3000
+    
   db:
     image: postgres
     restart: always
@@ -16,6 +29,7 @@ services:
     env_file:
       - .env
     volumes:
+      - ./init.sql:/docker-entrypoint-initdb.d/init.sql
       - scrape-data:/var/lib/postgresql/data
     ports:
       - 5432:5432

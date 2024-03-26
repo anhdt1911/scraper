@@ -2,8 +2,6 @@ package config
 
 import (
 	"os"
-
-	"github.com/joho/godotenv"
 )
 
 var (
@@ -28,9 +26,9 @@ var (
 
 func configVar(name string) string {
 	// Todo move load env to main
-	err := godotenv.Load("./.env")
-	if err != nil {
-		panic("error loading env variables")
-	}
+	// err := godotenv.Load("./.env")
+	// if err != nil {
+	// 	panic("error loading env variables")
+	// }
 	return os.Getenv(name)
 }
