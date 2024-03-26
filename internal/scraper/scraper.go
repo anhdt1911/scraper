@@ -34,7 +34,7 @@ type Scraper struct {
 type SearchResult struct {
 	ID                string `json:"id"`
 	Keyword           string `json:"keyword"`
-	Links             string `json:"links"`
+	LinkAmount        int    `json:"linkAmount"`
 	TotalSearchResult string `json:"totalSearchResult"`
 	HtmlContent       string `json:"htmlContent"`
 	AdwordAMount      int    `json:"adwordAmount"`
@@ -94,7 +94,7 @@ func (s *Scraper) Scrape(keyword string) (*SearchResult, error) {
 		return nil, err
 	}
 
-	var links []string
+	var linkCount, adCount int
 	// Populate results.
 	var populate func(*html.Node)
 	populate = func(n *html.Node) {
@@ -104,7 +104,7 @@ func (s *Scraper) Scrape(keyword string) (*SearchResult, error) {
 				for _, a := range n.Attr {
 					// Filter out valid links.
 					if a.Key == "href" && strings.HasPrefix(a.Val, "http") {
-						links = append(links, a.Val)
+						linkCount++
 					}
 				}
 			case "div":
@@ -118,6 +118,11 @@ func (s *Scraper) Scrape(keyword string) (*SearchResult, error) {
 					}
 				}
 			case "span":
+				for c := n.FirstChild; c != nil; c = c.NextSibling {
+					if c.Type == html.TextNode && c.Data == "Sponsored" {
+						adCount++
+					}
+				}
 			}
 		}
 
@@ -126,7 +131,7 @@ func (s *Scraper) Scrape(keyword string) (*SearchResult, error) {
 		}
 	}
 	populate(doc)
-	result.Links = strings.Join(links, ",")
-
+	result.LinkAmount = linkCount
+	result.AdwordAMount = adCount
 	return result, nil
 }
