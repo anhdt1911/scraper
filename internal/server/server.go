@@ -112,7 +112,7 @@ func (s *Server) GetSearchResultsByUserID(c *gin.Context) {
 	userID := c.Param("userID")
 
 	var results []scraper.SearchResult
-	rows, err := s.db.Query(c, "SELECT * FROM search_result WHERE user_id = $1", userID)
+	rows, err := s.db.Query(c, "SELECT * FROM search_result WHERE user_id = $1 ORDER BY id DESC", userID)
 	if err != nil {
 		c.JSON(400, gin.H{"msg": err})
 		return
