@@ -8,7 +8,6 @@ require (
 	github.com/gin-contrib/sessions v1.0.0
 	github.com/gin-gonic/gin v1.9.1
 	github.com/jackc/pgx/v5 v5.5.5
-	github.com/joho/godotenv v1.5.1
 	golang.org/x/net v0.22.0
 	golang.org/x/oauth2 v0.18.0
 )
