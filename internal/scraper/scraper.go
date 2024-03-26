@@ -119,7 +119,7 @@ func (s *Scraper) Scrape(keyword string) (*SearchResult, error) {
 				}
 			case "span":
 				for c := n.FirstChild; c != nil; c = c.NextSibling {
-					if c.Type == html.TextNode && c.Data == "Sponsored" {
+					if c.Type == html.TextNode && (c.Data == "Sponsored" || c.Data == "Ads") {
 						adCount++
 					}
 				}

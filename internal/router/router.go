@@ -18,7 +18,7 @@ import (
 func New(s *server.Server, auth *authenticator.Authenticator) *gin.Engine {
 	router := gin.Default()
 	router.Use(cors.New(cors.Config{
-		AllowOrigins:     []string{"http://localhost:5173", "https://" + config.AuthDomain},
+		AllowOrigins:     []string{config.UIDomain, "https://" + config.AuthDomain},
 		AllowMethods:     []string{"GET", "POST"},
 		AllowHeaders:     []string{"Origin"},
 		ExposeHeaders:    []string{"Content-Length"},

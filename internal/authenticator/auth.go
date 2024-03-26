@@ -117,7 +117,7 @@ func (a *Authenticator) Callback(c *gin.Context) {
 		return
 	}
 
-	c.Redirect(http.StatusTemporaryRedirect, "http://localhost:5173/dashboard")
+	c.Redirect(http.StatusTemporaryRedirect, config.UIDomain+"/dashboard")
 }
 
 func (a *Authenticator) GetUser(c *gin.Context) {

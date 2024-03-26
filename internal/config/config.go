@@ -22,6 +22,10 @@ var (
 	AuthCallbackURL  = configVar("AUTH0_CALLBACK_URL")
 )
 
+var (
+	UIDomain = configVar("UI_DOMAIN")
+)
+
 func configVar(name string) string {
 	// Todo move load env to main
 	err := godotenv.Load("./.env")
