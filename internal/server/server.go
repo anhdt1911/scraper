@@ -8,6 +8,7 @@ import (
 
 	"github.com/anhdt1911/scraper/internal/scraper"
 	"github.com/gin-gonic/gin"
+	"github.com/jackc/pgx/v5"
 	"github.com/jackc/pgx/v5/pgxpool"
 )
 
@@ -110,9 +111,16 @@ func (s *Server) GetSearchResultByKeyword(c *gin.Context) {
 
 func (s *Server) GetSearchResultsByUserID(c *gin.Context) {
 	userID := c.Param("userID")
+	search := c.Query("search")
 
 	var results []scraper.SearchResult
-	rows, err := s.db.Query(c, "SELECT * FROM search_result WHERE user_id = $1 ORDER BY id DESC", userID)
+	var rows pgx.Rows
+	var err error
+	if search == "" {
+		rows, err = s.db.Query(c, "SELECT * FROM search_result WHERE user_id = $1 ORDER BY id DESC", userID)
+	} else {
+		rows, err = s.db.Query(c, "SELECT * FROM search_result WHERE user_id = $1 AND keyword LIKE '%' || $2 || '%' ORDER BY id DESC", userID, search)
+	}
 	if err != nil {
 		c.JSON(400, gin.H{"msg": err})
 		return
